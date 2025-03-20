@@ -23,7 +23,7 @@ The **Attendance Sheet for DACO** is a monthly document designed for our client 
 ## Installation
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-repo/attendance-daco.git
+   git clone https://github.com/Mahabub2030/Attendance-sheet-For-Daco.git
    ```
 2. Navigate to the project folder:
    ```sh
