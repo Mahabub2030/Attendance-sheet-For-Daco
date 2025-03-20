@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Attendance Sheet  Month of - June 2024</title> -->
+    <title>Attendance Sheet  Month of - <span id="currentMonthHeader"></span></title>
+    <link rel="stylesheet" href="./data table/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./data table/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.8.0/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="./img/logo.jpg">
+</head>
+
+<body>
+    <div class="overflow-auto p- my-3">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <select id="month-select" class="form-select">
+                    <option value="2024-01">January</option>
+                    <option value="2024-02">February</option>
+                    <option value="2024-03"selected>March</option>
+                    <option value="2024-04">April</option>
+                    <option value="2024-05">May</option>
+                    <option value="2024-06">June</option>
+                    <option value="2024-07">July </option>
+                    <option value="2024-08">August</option>
+                    <option value="2024-09">September</option>
+                    <option value="2024-10">October</option>
+                    <option value="2024-11">November</option>
+                    <option value="2024-12">December</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button id="update-month" class="btn btn-primary">Update Month</button>
+            </div>
+            <div class="col-md-2">
+                <button id="download-pdf" class="btn btn-success">Download PDF</button>
+            </div>
+        </div>
+        <div class="border-warning-subtle grid grid-flow-row-dense rounded-3xl">
+            <div class="row">
+                <div class="col">
+                    <div class="data_table">
+                        <table id="example" class="table-hover table">
+                            <thead class="table-dark">
+                                <!-- Headers will be dynamically generated -->
+                            </thead>
+                            <tbody>
+                                <!-- Data will be dynamically generated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./data table/js/bootsrap.bundle.min.js"></script>
+    <script src="./data table/js/jquery-3.6.0.min.js"></script>
+    <script src="./data table/js/datatables.min.js"></script>
+    <script src="./data table/js/pdfmake.min.js"></script>
+    <script src="./data table/js/vfs_fonts.js"></script>
+    <script src="./data table/js/custom.js"></script>
+    <script src="./index.js"></script>
+    <script src="./script.js"></script>
+
+    <script>
+        // Function to get the number of days in a month
+        function getDaysInMonth(year, month) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        // Function to get the name of the day
+        function getDayName(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { weekday: 'short' });
+        }
+
+        // Function to update the table based on the selected month
+        function updateTable(year, month) {
+            const daysInMonth = getDaysInMonth(year, month);            const startDate = new Date(year, month - 1, 5);
+
+            // Create header rows
+            let headerHTML = `
+                <tr class="text-capitalize">
+                    <th colspan="4" class="text-center text-bg-Info fw-bolder text-lg"></th>
+                    <th colspan="${daysInMonth}" class="text-center text-bg-Info fw-bolder text-lg"><h5>${new Date(year, month - 1).toLocaleString('default', { month: 'long' })} ${year}</h5></th>
+                </tr>
+                <tr class="text-capitalize">
+                    <th class="text-bg-Info fw-bolder col-auto text-center text-lg"><h5>S.N</h5></th>
+                    <th class="text-bg-Info fw-bolder text-center col-auto text-lg"><h5>Employee ID No.</h5></th>
+                    <th class="text-bg-success fw-bolder text-center col-4 text-lg"><h5>Employees Name</h5></th>
+                    <th class="text-bg-Info fw-bolder text-center col-4 text-lg"><h5>Job Title</h5></th>
+                    ${Array.from({ length: daysInMonth }, (_, i) => {
+                        const day = i + 1;
+                        const dateStr = `${year}-${month}-${day}`;
+                        return `<th class="text-bg-Info fw-bolder text-center text-lg"><h5>${getDayName(dateStr)}, ${day}</h5></th>`;
+                    }).join('')}
+                    <th class="text-bg-Info fw-bolder text-center text-lg"><h5>Total</h5></th>
+                </tr>
+            `;
+
+            // Employees data here
+            const employees = [
+                { id: '1111825723', name: 'Abdulhakim Alammar', jobTitle: 'Project Manager' },
+                { id: '2254394725', name: 'Shoeib Abou Zeid Mahmoud Awad', jobTitle: 'Operation Manager' },
+                { id: '1063800229', name: 'Eman  Alnasser', jobTitle: 'Help Desk' },
+                { id: '1008147140', name: 'Zahara', jobTitle: 'Help Desk' },
+                { id: '1002929196', name: 'Saud Abdulaziz Albagawi', jobTitle: 'Chief Section Head' },
+                { id: '1003490479', name: 'SALMAN DAWOOD MUBARAK', jobTitle: 'Bayer' },
+                { id: '1004086458', name: 'Khalid Saud Alkhaldi', jobTitle: 'GRO office' },
+                { id: '1009306679', name: 'SADIK SAIDUR MAHADI', jobTitle: 'Supervisor' },
+                { id: '1010625711', name: 'Moneer Abdulhadi', jobTitle: 'HSE Supervisor' },
+                { id: '1010686366', name: 'FAWAZ MUBARAK', jobTitle: 'Lead Gardner' },
+
+                
+                { id: '1012990964', name: 'Neezar Abdulrahim', jobTitle: 'Data Process Opertor' },
+                { id: '1014293904', name: 'ADNAN ALAWI', jobTitle: 'Lead Gardner' },
+                { id: '1028504395', name: 'Hussain Salleh', jobTitle: 'Equp opertor' },
+                { id: '1028689220', name: 'Mozah Farss Aldossary', jobTitle: 'ForMan' },
+                { id: '1030471211', name: 'ALI ABDUL HADI', jobTitle: 'Horticulturest' },
+                { id: '1031410424', name: 'Ali Jaffar Alhaddad', jobTitle: 'Electrician' },
+                { id: '1045951728', name: 'MUSTAFA DAWOOD MUBARAK', jobTitle: 'Equp opertor' },
+                { id: '1050007960', name: 'YASSER ABDULHADI', jobTitle: 'Supervisor' },
+                { id: '2117833687', name: 'YAZAN ABU OBAYD', jobTitle: 'Supervisor' },
+                { id: '1059685774', name: 'Anwar Almubarak', jobTitle: 'Forman' },
+                { id: '1059821973', name: 'Ahmed Dawood', jobTitle: 'Welder' },
+                { id: '2589026653', name: 'MD Mahfoz Miah', jobTitle: 'Welder' },
+                { id: '2545542009', name: 'Ahsan Bundu', jobTitle: 'Welder' },
+
+                { id: '1060806096', name: 'SALMAN BIN ALI', jobTitle: 'Supervisor' },
+                { id: '1074080902', name: 'Ali Bin Hussein', jobTitle: 'Supervisor' },
+                { id: '2568282160', name: 'Ayman Elshahat', jobTitle: 'Supervisor' },
+                { id: '1079836175', name: 'Hassan Ahmad AlZahrani', jobTitle: 'Material Expediter' },
+                { id: '1085426169', name: 'Adnan Hussain', jobTitle: 'Mechanic' },
+                { id: '1087109466', name: 'Ahmed Al-Dossary', jobTitle: 'Project Admin' },
+                { id: '1087989883', name: 'Ibrahim Dawood Jassim Al Mubarak', jobTitle: 'Security' },
+                { id: '1093276606', name: 'Hashem hussain Alshakuri', jobTitle: 'Forman Mechanic' },
+                { id: '1097113474', name: 'Salim Zawayria', jobTitle: 'Forman Mechanic' },
+                // { id: '1102742648', name: 'Turki Yahya', jobTitle: 'GRO office' },
+                { id: '1103136923', name: 'Ali Hassan ALMAHASNAH', jobTitle: 'Engineer' },
+
+
+                { id: '1114777830', name: 'Mahadi Hassan', jobTitle: 'Supervisor' },
+                { id: '2182413589', name: 'Mohd Amin Jinat', jobTitle: 'Forman' },
+                { id: '2182500070', name: 'Billal W. Miah', jobTitle: 'Equp opertor' },
+                { id: '2182562435', name: 'Ahsan Ulla Moksed Ali', jobTitle: 'Driver' },
+                // { id: '2194529679', name: 'Sinon Arrofo', jobTitle: 'Supervisor' },
+                { id: '2195631219', name: 'Delower Hossain', jobTitle: 'Gardener' },
+                { id: '2231024064', name: 'Shafiqul Islam Hazrat Ali', jobTitle: 'irrigation technician' },
+                { id: '2234812275', name: 'Shadat Hossan', jobTitle: 'Driver' },
+                { id: '2237074196', name: 'Shukur Mohd Ali', jobTitle: 'Labour' },
+                { id: '2489191748', name: 'MOHD ZIYA UDDIN', jobTitle: 'Labour' },
+                // Add more employees as needed
+
+
+                { id: '2237075912', name: 'Assauduzamman', jobTitle: 'Irrigation specialist' },
+                { id: '2237076050', name: 'Mofiz Nayeb Ali', jobTitle: 'Forman' },
+                { id: '2237342916', name: 'Lal Miah Messer', jobTitle: 'Forman' },
+                { id: '2251498545', name: 'IMRAN SABJI FAROSH', jobTitle: 'Office Boy' },
+                { id: '2253768424', name: 'BAKIR RIFAEY MOUSA AWAD', jobTitle: 'Lead Gardner' },
+                { id: '2255145613', name: 'MOHAMMED MUSLIM', jobTitle: 'Pipe fitter' },
+                { id: '2259560106', name: 'Robert morales', jobTitle: 'Supervisor' },
+                { id: '2268090160', name: 'WASEEM CHHIMPA', jobTitle: 'Lab Chemist' },
+                { id: '2268099096', name: 'Mohammad Luqman', jobTitle: 'pump operator' },
+                { id: '2268207699', name: 'Arnulfo Lauron', jobTitle: 'Forman' },
+                // Add more employees as needed
+
+                { id: '2269348997', name: 'MOHAMMAD ARIF RAMZAN SARAW', jobTitle: 'Pipe fitter' },
+                { id: '2270349554', name: 'Danilo Andrade Revilla', jobTitle: 'Supervisor' },
+                { id: '2272775707', name: 'IMMAMUDDIN MOHD ABDUL GAFFAR', jobTitle: 'Cook' },
+                { id: '2272779600', name: 'Julio Jr. Corpuz', jobTitle: 'pump operator' },
+                { id: '2293975377', name: 'MOHD IMRAN GULL BAZ KHAN', jobTitle: 'Pipe fitter' },
+                { id: '2312904465', name: 'ABDUL SALAM', jobTitle: 'Equp opertor' },
+                { id: '2313446995', name: 'NAFEES AHMED MOHD', jobTitle: 'Pipe fitter' },
+                { id: '2334029580', name: 'Javed Fateh', jobTitle: 'Document Controller' },
+                { id: '2338250380', name: 'MOHAMMED ASLAM', jobTitle: 'Lead Gardner' },
+                { id: '2345076778', name: 'Shahbaz Khan Banaras Khan', jobTitle: 'Secuerty' },
+                // Add more employees as needed 60 done here
+
+
+                // Add more employees as 61 Start here
+                { id: '2345539411', name: 'Abdelgadir Mohammad', jobTitle: 'Supervisor' },
+                { id: '2347102093', name: 'ANAS ELAMIN SALIH ALI', jobTitle: 'IT Admin' },
+                { id: '2357582796', name: 'Anwar zeb murad ali', jobTitle: 'Store Helper' },
+                { id: '2360318402', name: 'ABDULLAH TAHA', jobTitle: 'Accountant' },
+                { id: '2362623007', name: 'Hassan Nawaz', jobTitle: 'Camp Boss' },
+                { id: '2363702099', name: 'Sonam Pashang', jobTitle: 'Equp opertor' },
+                { id: '2364018263', name: 'Saeed Ahmed Hkohar', jobTitle: 'Secuirty Gurad' },
+                { id: '2364585261', name: 'Firuz Tarufder Md abdul Hamid', jobTitle: 'Equp opertor' },
+                { id: '2381350079', name: 'Islam Ramzan Khan', jobTitle: 'Driver' },
+                { id: '2381603584', name: 'ABDUL JABBAR', jobTitle: 'Supervisor' },
+                // Add more employees as needed 70 done here
+
+
+                // Add more employees as 71 Start here
+                { id: '2381772371', name: 'Sahnawaz Alam', jobTitle: 'Forman' },
+                { id: '2383739907', name: 'Muhammad Wasid Sayed', jobTitle: 'pump operator' },
+                { id: '2387087774', name: 'UDDHAB PRASAD GIRI', jobTitle: 'Plumper' },
+                { id: '2393912742', name: 'Antonio Enario', jobTitle: 'Floroculturest' },
+                { id: '2396566198', name: 'Coyle Kay', jobTitle: 'Camp janitor' },
+                { id: '2397587276', name: 'ZAKEER HUSSAIN FATEH MOHD', jobTitle: 'Equp opertor' },
+                { id: '2409252893', name: 'MOHD SARIFUL ISLAM', jobTitle: 'Irrigation technician' },
+                { id: '2414440285', name: 'Hilal Kamal', jobTitle: 'Forman' },
+                { id: '2420562395', name: 'Ashraf Ahmed Abdulhadi', jobTitle: 'Project Planner' },
+                { id: '2424962989', name: 'Bipad Mondal Madan', jobTitle: 'Lead Gardner' },
+                // Add more employees as needed 80 done here
+
+                // Add more employees as 81 Start here
+                { id: '2428049825', name: 'MD JUWEL ISLAM', jobTitle: 'Labour' },
+                { id: '2433995657', name: 'MOHD SABUJ', jobTitle: 'Labour' },
+                { id: '2443400342', name: 'Sher Shah', jobTitle: 'HSE Supervisor' },
+                { id: '2448555926', name: 'MD Asad', jobTitle: 'Electrician' },
+                { id: '2453709376', name: 'Gobindo Fokir Chan', jobTitle: 'Lead Gardner' },
+                { id: '2454342771', name: 'LOTIF MIAH AKRAB', jobTitle: 'Cook' },
+                { id: '2454699634', name: 'MD Fhozlul Hakue', jobTitle: 'Asphalt Technician' },
+                { id: '2454700887', name: 'Alam Mia', jobTitle: 'technician' },
+                { id: '2457710008', name: 'Kamrul Islam', jobTitle: 'Forman' },
+                { id: '2457711089', name: 'Mohammad Masum', jobTitle: 'labour' },
+                { id: '2568659672', name: 'Gufran Warish Ali Kureshi', jobTitle: 'Mechanic' },
+                // Add more employees as needed 90 done here
+
+
+                // Add more employees as 91 Start here
+                { id: '2459481608', name: 'Nazrul Islam', jobTitle: 'Electrician' },
+                { id: '2460096924', name: 'RASEEL MIAH ABDUL', jobTitle: 'Driver' },
+                { id: '2465439194', name: 'ABUL KALAM AMINUDDIN', jobTitle: 'Gardener' },
+                { id: '2470358843', name: 'Moustafa Kamel', jobTitle: 'Forman' },
+                { id: '2476545252', name: 'MD Harrayed Mia', jobTitle: 'Labour' },
+                { id: '2477933697', name: 'MD DALOWAR', jobTitle: 'Gardener' },
+                { id: '2482796352', name: 'Masdur Rhaman', jobTitle: 'Gardener' },
+                // { id: '2483674780', name: 'MD ANISUR RHAMAN', jobTitle: 'Mechanic' },
+                { id: '2483842916', name: 'Afrazier Nassal', jobTitle: 'QA/QC Engineer' },
+                { id: '2484839572', name: 'MOHAMMAD ALAMIN MIAH MOHAMMED', jobTitle: 'Forman' },
+                // Add more employees as needed 100 done here
+
+                // Add more employees as 101 Start here
+                { id: '2485304162', name: 'KRISHNA BIND NANDA BIND', jobTitle: 'Equp opertor' },
+                { id: '2485743385', name: 'JAHIRUL HAQUE BHUIYAN', jobTitle: 'Forman' },
+                { id: '2489191995', name: 'Mohammad Al-Amin', jobTitle: 'Sample collector' },
+                { id: '2489232856', name: 'MD BACHU MIAH', jobTitle: 'Labour' },
+                { id: '2489688859', name: 'Alex Garcia Garcia', jobTitle: 'Chief Sction Head' },
+                { id: '2491045577', name: 'HRIDOY RAFQUL ISLAM ', jobTitle: 'Gardener' },
+                { id: '2494139062', name: 'Salim Siddiqur Rahman', jobTitle: 'Equp opertor' },
+                // { id: '2483674780', name: 'MD ANISUR RHAMAN', jobTitle: 'Mechanic' },
+                { id: '2494387042', name: 'MD Suman', jobTitle: 'Labour' },
+                { id: '2495594786', name: 'BACHU MIAH', jobTitle: 'Mason' },
+                { id: '2582738650', name: 'Amir Hussein Ahmed Saty', jobTitle: 'Foreman' },
+                // Add more employees as needed 110 done here
+
+
+                // Add more employees as 111 Start here
+                { id: '2495597805', name: 'ROMAN KHAN', jobTitle: 'Labour' },
+                { id: '2495723575', name: 'MOHAMMED REJAUL MIAH', jobTitle: 'Labour' },
+                { id: '2495723666', name: 'MD FARUK MIAH', jobTitle: 'Welder' },
+                { id: '2495723708', name: 'SHAHMERAJ MIAH', jobTitle: 'Labour' },
+                { id: '2495723849', name: 'SEMUL HOSSAIN', jobTitle: 'Labour' },
+                { id: '2495723948', name: 'MOHAMMAD RAJU MIAH ', jobTitle: 'Pump operator' },
+                { id: '2495724003', name: 'SALAH UDDIN CHOWDRY', jobTitle: 'Forman' },
+                { id: '2495724110', name: 'NURE ALAM', jobTitle: 'Labour' },
+                { id: '2495724151', name: 'MONIR HOSSAIN', jobTitle: 'Secuerty' },
+                { id: '2495724227', name: 'MANNAN PRODHAN', jobTitle: 'Mason' },
+                // Add more employees as needed 120 done here
+
+
+                // Add more employees as 121 Start here
+                // { id: '2495724292', name: 'MD SULTAN MAHAMUD', jobTitle: 'Pump operator' },
+                { id: '2495724904', name: 'MD MIZANUR RAHAMAN', jobTitle: 'Electrician' },
+                { id: '2495725018', name: 'ROBIUL', jobTitle: 'Driver' },
+                { id: '2495728608', name: 'MAZIBUR RAHMAN', jobTitle: 'Pump operator' },
+                { id: '2495729028', name: 'MOHAMMAD ROCKY HOSSAIN', jobTitle: 'Gardener' },
+                { id: '2495729275', name: 'MASUM MIA ', jobTitle: 'Gardener' },
+                { id: '2495729424', name: 'MD ABUL HASAN', jobTitle: 'Gardener' },
+                { id: '2495729556', name: 'MOHAMMAD HOSSAIN', jobTitle: 'Labour' },
+                { id: '2495776656', name: 'SHAHAB UDDIN', jobTitle: 'Mechanic' },
+                { id: '1085981445', name: 'Hussain Alzayer', jobTitle: 'Mechanic' },
+                { id: '2495831162', name: 'MD HOSSAIN', jobTitle: 'Labour' },
+                // Add more employees as needed 130 done here
+
+
+                // // Add more employees as 131 Start here
+                { id: '2495831188', name: 'MD MAHNUDUL HASAN', jobTitle: 'Lead Gardner' },
+                { id: '2495831253', name: 'KOBIR ALI', jobTitle: 'Driver' },
+                // { id: '2495870772', name: 'MD AKTERUZZAMAN', jobTitle: 'Mechanic' },
+                { id: '2495870822', name: 'FIROZ ALAM MOFIZ', jobTitle: 'Forman' },
+                { id: '2496398013', name: 'ALAMIN MIAH', jobTitle: 'Supervisor' },
+                // { id: '2496616422', name: 'SHARIF MIAH', jobTitle: 'Gardener' },
+                { id: '2496620507', name: 'MOHAMMED RUHUL AMIN SARKER', jobTitle: 'Janitor' },
+                { id: '2496673779', name: 'MOHAMMAD SOHEL', jobTitle: 'Labour' },
+                { id: '2496981396', name: 'MD ALA UDDIN', jobTitle: 'Gardener' },
+                // { id: '2496981529', name: 'MD IUSUF ALI', jobTitle: 'Asphalt Technician' },
+                { id: '2554504510', name: 'ABDALLA SAMIR AHMED SAYED', jobTitle: 'QA/QC Engineer' },
+                { id: '1092119575', name: 'Muhanna', jobTitle: 'GRO Officer' },
+                // // Add more employees as needed 140 done here.
+
+
+                // // Add more employees as 141 Start here
+                { id: '2497311403', name: 'MAFIZ PRODHAN', jobTitle: 'Gardner' },
+                { id: '2497311643', name: 'Shorov Miah', jobTitle: 'Mechanic Helper' },
+                { id: '2497334124', name: 'Rahim Sikder', jobTitle: 'leadman' },
+                { id: '2497426599', name: 'MONIR HOSSAIN', jobTitle: 'Labour' },
+                { id: '2497426698', name: 'MOHAMMAD ALI', jobTitle: 'Labour' },
+                { id: '2497426730', name: 'MD SELIM', jobTitle: 'Mechanic Helper' },
+                { id: '2497505327', name: 'KADIR KASHEM', jobTitle: 'Gardener' },
+                { id: '2498141361', name: 'HANNAN MIAH', jobTitle: 'Driver' },
+                { id: '2498313234', name: 'MD Sohag Mia', jobTitle: 'Equp opertor' },
+                { id: '2499608475', name: 'Hanif Malo Miah', jobTitle: 'Gardener' },
+                { id: '2526522285', name: 'Sohel Miah', jobTitle: 'Gardener' },
+                // // Add more employees as needed 150 done here
+
+
+                // // Add more employees as 151 Start here
+                { id: '2500010034', name: 'Amir Hosen', jobTitle: 'Equp opertor' },
+                { id: '2500046996', name: 'Mohammad Abu Kaowsar', jobTitle: 'Electrician' },
+                { id: '2500807702', name: 'MD Saiful', jobTitle: 'Equp opertor' },
+                { id: '2503732816', name: 'Reda Abdelmaged Mohammad Ibrahim', jobTitle: 'Chief Sction Head' },
+                { id: '2504275484', name: 'MD Nasir Uddin', jobTitle: 'Labour' },
+                { id: '2504711173', name: 'Mahafuzur Rahman', jobTitle: 'Forman' },
+                { id: '2506158308', name: 'Hakim Uddin', jobTitle: 'Gardener' },
+                { id: '2507517965', name: 'Nazar Adam', jobTitle: 'Driver' },
+                { id: '2507667182', name: 'MD FARUQ MIAH', jobTitle: 'Labour' },
+                { id: '2507724652', name: 'Razib Bepery', jobTitle: 'Gardener' },
+                // // Add more employees as needed 160 done here
+
+                // // Add more employees as 161 Start here
+                { id: '2508425903', name: 'Mohammad Mithun', jobTitle: 'Labour' },
+                { id: '2508426042', name: 'Faruk Miah', jobTitle: 'Gardener' },
+                { id: '2508426216', name: 'Azizul Haque', jobTitle: 'Labour' },
+                { id: '2508426315', name: 'Noor Mohammad', jobTitle: 'Gardener' },
+                { id: '2508426612', name: 'Imamul', jobTitle: 'Welder' },
+                { id: '2508426893', name: 'Aslam Mollah', jobTitle: 'Gardener' },
+                { id: '2508426968', name: 'Korban Ali', jobTitle: 'Gardener' },
+                { id: '2508433832', name: 'Salim', jobTitle: 'Welder' },
+                // { id: '2508445323', name: 'MD EAYASIN MIAH', jobTitle: 'Labour' },
+                { id: '2508536865', name: 'MOHAMMAD SHIMUL HOOSAIN', jobTitle: 'Forman' },
+                // // Add more employees as needed 170 done here.
+
+
+                // // Add more employees as 171 Start here
+                { id: '2508658503', name: 'Amir Hossain', jobTitle: 'Gardener' },
+                { id: '2509143570', name: 'ABU KALAM', jobTitle: 'Gardener' },
+                { id: '2509143893', name: 'MONIR HOSSAIN', jobTitle: 'Equp opertor' },
+                { id: '2509443277', name: 'Khalilur Rahman', jobTitle: 'Labour' },
+                { id: '2509642860', name: 'MD.Firoz Ali', jobTitle: 'Gardener' },
+                { id: '2510020221', name: 'MOHAMMAD JAMAL', jobTitle: 'Forman' },
+                { id: '2510120526', name: 'MOHAMMAD ALAMIN', jobTitle: 'Labour' },
+                { id: '2510896356', name: 'MASUD IBRAHIM', jobTitle: 'Forman' },
+                { id: '2510919497', name: 'Mohammad Safi Idris', jobTitle: 'Forman' },
+                { id: '2511045599', name: 'SAIFUL KHAN', jobTitle: 'Equp opertor' },
+                // // Add more employees as needed 180 done here.
+
+
+                // // Add more employees as 181 Start here
+                { id: '2511066462', name: 'MUSARAF HOSSAIN', jobTitle: 'Equp opertor' },
+                { id: '2511128486', name: 'MD ARIFUL ISALM', jobTitle: 'Mechanic' },
+                { id: '2513345492', name: 'MD KANCHAN', jobTitle: 'Labour' },
+                { id: '2513346292', name: 'KAJOL SOLTAN', jobTitle: 'Gardener' },
+                { id: '2514099734', name: 'Main Uddin', jobTitle: 'Gardener' },
+                { id: '2515011902', name: 'Liaqat Ali', jobTitle: 'Technician' },
+                { id: '2515012033', name: 'Abdullah', jobTitle: 'Technician' },
+                { id: '2515012421', name: 'Rashid Ahmad', jobTitle: 'Forman' },
+                { id: '2515192462', name: 'MOHAMMAD FARUQ AHMED', jobTitle: 'Labour' },
+                { id: '2515496525', name: 'Mahabub Alam', jobTitle: 'Data Analyst-IT' },
+                { id: '2588713095', name: 'MARK LENBER  RAMOS', jobTitle: 'Data Process Opertr' },
+                // // Add more employees as needed 190 done here
+
+                // // Add more employees as 191 Start here
+                { id: '2515581342', name: 'MD MOSTAFA KAMAL', jobTitle: 'Forman' },
+                { id: '2515706667', name: 'MONIR HOSSAIN', jobTitle: 'Forman Sigange' },
+                { id: '2515706832', name: 'SADDAM HOSSAIN', jobTitle: 'Equp opertor' },
+                { id: '2516224769', name: 'Harun Mohammad', jobTitle: 'Forman' },
+                { id: '2516225873', name: 'MOHAMMAD RABIULLA', jobTitle: 'Labour' },
+                { id: '2516313067', name: 'MD RUBEL ALI', jobTitle: 'Mechanic Helper' },
+                { id: '2516313166', name: 'MD SUZAN MIA', jobTitle: 'Mechanic' },
+                { id: '2516337322', name: 'Shafiqul Islam', jobTitle: 'Mechanic Helper' },
+                { id: '2516467244', name: 'Gamaraldin Abdalrhin', jobTitle: 'Electrician' },
+                { id: '2517202947', name: 'Asad Ullah', jobTitle: 'Steel fabricator' },
+                // // Add more employees as needed 200 done here
+
+
+                // // Add more employees as 201 Start here.
+                { id: '2517248056', name: 'Adil Khan', jobTitle: 'Steel fabricator' },
+                { id: '2517549297', name: 'Muslim Khan', jobTitle: 'Painter' },
+                { id: '2517765158', name: 'Mohammad Humaun Kabir', jobTitle: 'Gardener' },
+                { id: '2517790511', name: 'MD NOSAD', jobTitle: 'Labour' },
+                { id: '2518057126', name: 'RANA ABDUL GAFUR', jobTitle: 'Equp opertor' },
+                { id: '2518057142', name: 'ABUL HOSSAIN', jobTitle: 'Labour' },
+                { id: '2518754243', name: 'ZAJ MIAH', jobTitle: 'Gardener' },
+                { id: '2518758228', name: 'PRASENJIT DAS', jobTitle: 'Equp opertor' },
+                { id: '2518759952', name: 'BAYEJID MIAH', jobTitle: 'Gardener' },
+                { id: '2518760430', name: 'MD ALKUS', jobTitle: 'Gardener' },
+                // // Add more employees as needed 210 done here
+
+                // // Add more employees as 211 Start here.
+                { id: '2519461897', name: 'Akbar Ali', jobTitle: 'Welder' },
+                { id: '2519563924', name: 'SOJIB MIAH SAMSUL HOQUE', jobTitle: 'Welder' },
+                { id: '2519602847', name: 'Khalid mohammad', jobTitle: 'Technician' },
+                { id: '2519950931', name: 'SOHIL MIAH', jobTitle: 'Labour' },
+                { id: '2521319794', name: 'Omar Mokhtar Elsayed', jobTitle: 'Material Expediter' },
+                { id: '2521601324', name: 'saiful islam jafor', jobTitle: 'Gardener' },
+                { id: '2522902366', name: 'Khan Muhammad', jobTitle: 'Applicator' },
+                { id: '2523147565', name: 'Muhammad Tayyeb', jobTitle: 'Labour' },
+                { id: '2523266126', name: 'MD Sohag', jobTitle: 'Pump operator' },
+                { id: '2518760430', name: 'Babul Rustom Ali', jobTitle: 'Gardener' },
+                // // Add more employees as needed 220 done here
+
+
+                // // Add more employees as 221 Start here.
+                { id: '2523523955', name: 'MD Rubel Mia', jobTitle: 'Mechanic' },
+                { id: '2523527030', name: 'md Rasel', jobTitle: 'Gardener' },
+                { id: '2523627400', name: 'md joynal', jobTitle: 'Electrician' },
+                { id: '2523931562', name: 'Md jakir hosen', jobTitle: 'Irrigation technician' },
+                { id: '2524011950', name: 'MOHAMMAD TOULO KHAN', jobTitle: 'Mechanic Helper' },
+                { id: '2524173487', name: 'Mohammad Jahangir', jobTitle: 'Mason' },
+                { id: '2524217433', name: 'ARIFUL ISLAM ', jobTitle: 'Mechanic Helper' },
+                { id: '2524231350', name: 'MD Abdur Rahman', jobTitle: 'Gardener' },
+                { id: '2524687353', name: 'Mofizur Nur', jobTitle: 'Labour' },
+                { id: '2524872310', name: 'MD Rafiqul Islam', jobTitle: 'Labour' },
+                // // Add more employees as needed 230 done here
+                
+
+
+                // // Add more employees as 231 Start here.
+                { id: '2526071754', name: 'Abdul Aziz', jobTitle: 'Labour' },
+                { id: '2526223470', name: 'Adil Mohammed Habib', jobTitle: 'Equp opertor' },
+                { id: '2526230780', name: 'MD Numan Miah', jobTitle: 'Labour' },
+                { id: '2526578113', name: 'Zahedul Islam Akram', jobTitle: 'Applicator' },
+                { id: '2527652719', name: 'Syed Mir Mohammad Ali', jobTitle: 'Equp opertor' },
+                { id: '2528555366', name: 'MD Sumon Molla', jobTitle: 'Labour' },
+                { id: '2530649199', name: 'akram hossain ', jobTitle: 'Irrigation technician' },
+                { id: '2530666425', name: 'MD Aker Molla', jobTitle: 'Gardener' },
+                { id: '2530838354', name: 'Abdelmaged Mohamed', jobTitle: 'Forman' },
+                // // Add more employees as needed 240 done here
+
+
+
+                // // Add more employees as 241 Start here.
+                { id: '2531802011', name: 'MD Abu Kalam', jobTitle: 'Mason' },
+                { id: '2531962963', name: 'FAHAD MIAH', jobTitle: 'Applicator' },
+                { id: '2532067424', name: 'A Kabir Miah', jobTitle: 'Gardener' },
+                { id: '2532075591', name: 'MD Al Amin', jobTitle: 'Gardener' },
+                { id: '2532075658', name: 'MD Ferdous', jobTitle: 'Labour' },
+                { id: '2532075823', name: 'Jakirul Islam ', jobTitle: 'Gardener' },
+                { id: '2532076003', name: 'Rajib Miah ', jobTitle: 'Irrigation technician' },
+                { id: '2532076185', name: 'MD Biplop Mia', jobTitle: 'Gardener' },
+                { id: '2539609707', name: 'khalid mohamed obaid', jobTitle: 'Irrigation technician' },
+                { id: '2541118267', name: 'MD Mintu Hossain', jobTitle: 'Applicator' },
+                // // Add more employees as needed 250 done here
+
+
+
+                // // Add more employees as 251 Start here.
+                { id: '2547451399', name: 'sifat dewan', jobTitle: 'Irrigation techniciann' },
+                { id: '2547721387', name: 'Ashraful islam', jobTitle: 'Store keepr' },
+                { id: '2547841979', name: 'TAUSEEF AHMAD', jobTitle: 'Labour' },
+                { id: '2547842068', name: 'NOOR UL SAMAD', jobTitle: 'Painter' },
+                { id: '2547842159', name: 'SAEED KHAN', jobTitle: 'Mason' },
+                { id: '2547852554', name: 'MUHAMMAD ASIF ', jobTitle: 'Gardener' },
+                { id: '2547864591', name: 'ABDUL SALAM', jobTitle: 'Gardener' },
+                { id: '2547864955', name: 'MUHAMMAD DANISH', jobTitle: 'Gardener' },
+                { id: '2547865234', name: 'MUHAMMAD HAMRAZ', jobTitle: 'Gardener' },
+                { id: '2547865341', name: 'MUHHAMAD IRSHAD SAR ZAMIN', jobTitle: 'Gardener' },
+                // // Add more employees as needed 260 done here
+
+
+
+
+                // // Add more employees as 261 Start here.
+                { id: '2547865465', name: 'MUAMMAD SALEH', jobTitle: 'Gardener' },
+                { id: '2547865515', name: 'NASIR KHAN', jobTitle: 'Gardener' },
+                // { id: '2547865630', name: 'NAUMAN KHAN', jobTitle: 'Applicator' },
+                { id: '2547865903', name: 'SHAH SAID', jobTitle: 'Labour' },
+                { id: '2547866273', name: 'LUQMAN', jobTitle: 'pump operator' },
+                { id: '2547866422', name: 'ABDUR RAZIQ ', jobTitle: 'Irrigation technician' },
+                { id: '2547866497', name: 'RAZI KHAN', jobTitle: 'Labour' },
+                { id: '2547866596', name: 'DIN FARAZ KHAN', jobTitle: 'Gardener' },
+                { id: '2547867115', name: 'SAQIB SHAFIQUE', jobTitle: 'Steel fabricator' },
+                { id: '2547867289', name: 'MUHAMMAD RASHID HAMEED', jobTitle: 'Irrigation technician' },
+                // // Add more employees as needed 270 done here
+
+
+                // // Add more employees as 271 Start here.
+                { id: '2547886651', name: 'SALIM ZADA', jobTitle: 'Irrigation technician' },
+                { id: '2547887378', name: 'FARUKH SAIR', jobTitle: 'Labour' },
+                { id: '2547920070', name: 'HAZRAT BILAL', jobTitle: 'Labour' },
+                { id: '2547920286', name: 'ALAM SHER', jobTitle: 'Irrigation technician' },
+                { id: '2547920484', name: 'SAEED ULLAH JAN', jobTitle: 'Irrigation technician' },
+                { id: '2547920542', name: 'JEHAD ALI ', jobTitle: 'Irrigation technician' },
+                { id: '2547920666', name: 'MUHAMMAD BILAL', jobTitle: 'Irrigation technicianr' },
+                // { id: '2547920815', name: 'MUHAMMAD IBRAR', jobTitle: 'Irrigation technician' },
+                { id: '2547920922', name: 'MUHAMMAD MIRAJ', jobTitle: 'Labour' },
+                { id: '2547921037', name: 'UMAR KHAN', jobTitle: 'Labour' },
+                // // Add more employees as needed 280 done here
+
+
+                // // Add more employees as 281 Start here.
+                { id: '2547944518', name: 'IRSHAD AHMAD', jobTitle: 'Irrigation technician' },
+                { id: '2547950002', name: 'SADIQ REHMAN', jobTitle: 'Electrician' },
+                { id: '2547958724', name: 'ZAKIR ULLAH', jobTitle: 'Labour' },
+                { id: '2548124250', name: 'FALAK ZEB', jobTitle: 'Irrigation technician' },
+                // { id: '2548124326', name: 'NUMAN KHAN', jobTitle: 'Labour' },
+                { id: '2491120859', name: 'Mohammad Sakil Bhuiyan ', jobTitle: 'Lab  technician' },
+                { id: '2493550483', name: 'MONAYEM HOSSAN', jobTitle: 'Equp opertor' },
+                { id: '2523747224', name: 'Shams Ul Arifeen', jobTitle: 'Gardener' },
+                { id: '2548716394', name: 'WAKEEL KHAN', jobTitle: 'Labour' },
+                { id: '2548716402', name: 'JAN ALAM', jobTitle: 'Labour' },
+                // // Add more employees as needed 290 done here
+
+
+
+                // // Add more employees as 291 Start here.
+                { id: '2548624697', name: 'HIKMAT KHAN', jobTitle: 'Labour' },
+                // { id: '2548624853', name: 'WAZIR HUSSAIN', jobTitle: 'Labour' },
+                { id: '2548624952', name: 'NAIMAT ULLAH', jobTitle: 'irrigation technician' },
+                // { id: '2548823356', name: 'SHAKIDULLAH', jobTitle: 'Irrigation technician' },
+                // { id: '2549377733', name: 'BAKHAMAN ULLAH', jobTitle: 'irrigation technician' },
+                { id: '2549378004', name: 'MUSLIM AHMED', jobTitle: 'irrigation technician' },
+                { id: '2549622542', name: 'NOOR SHARIF', jobTitle: 'irrigation technician' },
+                { id: '2549811186', name: 'Asad Khan', jobTitle: 'Foreman' },
+                { id: '2559354200', name: 'MUNIS MUNSHAID', jobTitle: 'Driver' },
+                { id: '2553172350', name: 'NADEEM AHMAD VASIYAT', jobTitle: 'Driver' },
+                // // Add more employees as needed 300 done here
+
+
+                // // Add more employees as 301 Start here.
+                { id: '2488997889', name: 'Sirajul Islam', jobTitle: 'Forman' },
+                { id: '2552734820', name: 'MOHAMMAD TABARK HUSSAIN', jobTitle: 'PLUMBER' },
+                { id: '2549825939', name: 'Md Mukles', jobTitle: 'PLUMBER' },
+                { id: '2550119016', name: 'Hira Tarfdar', jobTitle: 'Labor' },
+                { id: '2549981831', name: 'Bazlul Alam Dulal', jobTitle: 'Forman' },
+                { id: '2545574275', name: 'Arshad Miah', jobTitle: 'DRIVER HD' },
+                
+                
+                // // Add more employees as needed 307 done here
+                { id: '2555932330', name: 'HABIBUR ROHMAN', jobTitle: 'Labor' },
+                { id: '2249250081', name: 'ABU SAYED', jobTitle: 'Labor' },
+            
+                // { id: '2547920203', name: 'TAJ WALL KHAN', jobTitle: 'irrigation technician' },
+                // { id: '2547887642', name: 'QAMAR ZAMAN ', jobTitle: 'Mason' },
+                // { id: '2547887873', name: 'HUSSAIN ULLAH', jobTitle: 'irrigation technician' },
+                // { id: '2548118989', name: 'ILYAS KHAN', jobTitle: 'irrigation technician' },
+               
+                { id: '2547945333', name: 'GUL SAID', jobTitle: 'Labour' },
+                { id: '2443339227', name: 'Showel Rana', jobTitle: 'Labour' },
+                { id: '2482036015', name: 'JUWEL RANA', jobTitle: 'irrigation technician' },
+                { id: '2471137956', name: 'Md Liton Mia', jobTitle: 'irrigation technician' },
+                { id: '2522266622', name: 'AKMAN BAPARI', jobTitle: 'irrigation technician' },
+                { id: '2495430643', name: 'Abu Sadiq', jobTitle: 'Mason' },
+                { id: '1078602875', name: 'Asma Ibrahim Alrawahan', jobTitle: 'Suparvisor' },
+                // { id: '2547945523', name: 'MUHAMMD IQBAL', jobTitle: 'irrigation technician' },
+                
+                
+                // // Add more employees as needed 313 done here
+            ];
+
+            // Create body rows
+            let bodyHTML = employees.map((employee, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${employee.id}</td>
+                    <td>${employee.name}</td>
+                    <td>${employee.jobTitle}</td>
+                    ${Array.from({ length: daysInMonth }, (_, i) => {
+                        const day = i + 1;
+                        const dateStr = `${year}-${month}-${day}`;
+                        const dayName = getDayName(dateStr);
+                        if (dayName === 'Fri') {
+                            return '<td contenteditable="true" style="background-color: yellow;">H</td>';
+                        } else {
+                            return '<td contenteditable="true">P</td>';
+                        }
+                    }).join('')}
+                    <td contenteditable="true" class="total-cell"></td>
+                </tr>
+            `).join('');
+
+            // Update table headers and body
+            $('#example thead').html(headerHTML);
+            $('#example tbody').html(bodyHTML);
+
+            // Recalculate totals initially
+            calculateTotals();
+        }
+
+        // Function to calculate total P and total H
+        function calculateTotals() {
+            $('#example tbody tr').each(function () {
+                var totalP = 0;
+                var totalH = 0;
+
+                // Iterate through each cell in the row
+                $(this).find('td').each(function (index) {
+                    // Skip first four columns (S.N, Employee ID No., Employees Name, Job Title)
+                    if (index > 3) {
+                        var value = $(this).text().trim();
+                        // Increment totalP if the cell contains 'P'
+                        if (value === 'P') {
+                            totalP++;
+                        }
+                        // Increment totalH if the cell contains 'H'
+                        else if (value === 'H') {
+                            totalH++;
+                        }
+                    }
+                });
+
+                // Update the total cell with the calculated values
+                $(this).find('.total-cell').text(`P: ${totalP}, H: ${totalH}`);
+            });
+        }
+
+        // Function to generate and download PDF
+        function downloadPDF() {
+            const [year, month] = $('#month-select').val().split('-');
+            const daysInMonth = getDaysInMonth(year, month);
+            const selectedMonthName = $('#month-select option:selected').text(); // Get the selected month name
+
+            var docDefinition = {
+                content: [
+                    {
+                        text: `Attendance Sheet for ${selectedMonthName}`, // Use the selected month name
+                        style: 'header',
+                        color: 'blue'  // Set header text color
+                    },
+                    {
+                        table: {
+                            headerRows:1,
+                            body: [
+                                [
+                                    { text: 'S.N', style: 'tableHeader', fillColor: '#D3D3D3' },
+                                    { text: 'Employee ID No.', style: 'tableHeader', fillColor: '#D3D3D3' },
+                                    { text: 'Employees Name', style: 'tableHeader', fillColor: '#D3D3D3' },
+                                    { text: 'Job Title', style: 'tableHeader', fillColor: '#D3D3D3' },
+                                    ...Array.from({ length: daysInMonth }, (_, i) => {
+                                        const day = i + 1;
+                                        const dateStr = `${$('#month-select').val()}-${day}`;
+                                        return { text: `${getDayName(dateStr)}, ${day}`, style: 'tableHeader', fillColor: '#D3D3D3' };
+                                    }),
+                                    { text: 'Total', style: 'tableHeader', fillColor: '#D3D3D3' }
+                                ],
+                                ...$('#example tbody tr').map((index, tr) => {
+                                    var $tr = $(tr);
+                                    var row = [
+                                        { text: $tr.find('td:eq(0)').text(), style: 'tableBody' },
+                                        { text: $tr.find('td:eq(1)').text(), style: 'tableBody' },
+                                        { text: $tr.find('td:eq(2)').text(), style: 'tableBody' },
+                                        { text: $tr.find('td:eq(3)').text(), style: 'tableBody' },
+                                        ...$tr.find('td:gt(3)').map((_, td) => ({ text: $(td).text(), style: 'tableBody' })).get()
+                                    ];
+                                    return row;
+                                }).get()
+                            ]
+                        }
+                    }
+                ],
+                styles: {
+                    header: {
+                        fontSize:15,
+                        bold: true,
+                        margin: [0, 0, 0, 10]
+                    },
+                    tableHeader: {
+                        bold: true,
+                        fontSize: 8,
+                        color: 'black'
+                    },
+                    tableBody: {
+                        fontSize: 8
+                    }
+                }
+            };
+
+            pdfMake.createPdf(docDefinition).download(`Attendance_Sheet_${selectedMonthName}.pdf`); // Use the selected month name in the file name
+        }
+
+        // Event listener to update the month when the button is clicked
+        $('#update-month').on('click', function () {
+            const [year, month] = $('#month-select').val().split('-');
+            updateTable(year, month);
+        });
+
+        // Event listener to recalculate totals whenever the table is updated
+        $('#example tbody').on('input', 'td', function () {
+            calculateTotals();
+        });
+
+        // Event listener to delete 'P' on double click
+        $('#example tbody').on('dblclick', 'td', function () {
+            if ($(this).text().trim() === 'P') {
+                $(this).text('');
+                calculateTotals();
+            }
+        });
+
+        // Event listener to download PDF
+        $('#download-pdf').on('click', function () {
+            downloadPDF();
+        });
+
+        // Initialize the table with the default selected month
+        const [defaultYear, defaultMonth] = $('#month-select').val().split('-');
+        updateTable(defaultYear, defaultMonth);
+
+
+    
+    </script>
+
+</body>
+
+</html>
