@@ -39,7 +39,7 @@ $(document).ready(function() {
     });
 
     // Update the title to display the current month
-    $('.title').text("Manpower List Month Of " + currentMonth + "-" + currentDate.getFullYear());
+    $('.title').text("Manpower List Month Of " + " "+ "-" + currentDate.getFullYear());
 
     // Apply text-center class to all columns except the first three and last one
     table.columns().every(function() {
@@ -70,6 +70,6 @@ $(document).ready(function() {
 
     // Set the current month in the page title and header
     $('#currentMonthHeader').text(currentMonth);
-    document.title = "Attendance Sheet  Month of 2025 -  " + currentMonth ;
+    document.title = "Attendance Sheet  Month of 2025 -  " + currentMonth;
 });
 
