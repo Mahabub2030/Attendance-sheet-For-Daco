@@ -3,7 +3,7 @@ $(document).ready(function() {
     // Get the current date
     var currentDate = new Date();
     // Get the month and convert it to a string with the full month name
-    var currentMonth = currentDate.toLocaleString('en-US', { month: 'long' });
+    // var currentMonth = currentDate.toLocaleString('en-US', { month: 'long' });
 
     var table = $('#example').DataTable({
         buttons: [
@@ -39,6 +39,7 @@ $(document).ready(function() {
     });
 
     // Update the title to display the current month
+    // $('.title').text("Manpower List Month Of " + " "+ "-" + currentDate.getFullYear());
     $('.title').text("Manpower List Month Of " + " "+ "-" + currentDate.getFullYear());
 
     // Apply text-center class to all columns except the first three and last one
